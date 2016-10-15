@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-platform-gw="http://www.mulesoft.org/schema/mule/api-platform-gw" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:bb-8="http://www.mulesoft.org/schema/mule/bb-8" xmlns:bb8="http://www.mulesoft.org/schema/mule/bb8" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/bb8 http://www.mulesoft.org/schema/mule/bb8/current/mule-bb8.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/bb-8 http://www.mulesoft.org/schema/mule/bb-8/current/mule-bb-8.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/api-platform-gw http://www.mulesoft.org/schema/mule/api-platform-gw/current/mule-api-platform-gw.xsd">
+    <http:listener-config name="api-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
+    <apikit:config name="api-config" raml="api.raml" consoleEnabled="true" consolePath="console" doc:name="Router" />
+    <bb8:config name="BB-8" apiUrl="${api.url}" deviceId="${bb8.uuid}" doc:name="BB8" />
+    <api-platform-gw:api apiName="BB-8 System API" version="1.0" flowRef="api-main" create="true" apikitRef="api-config" doc:name="API Autodiscovery">
+        <api-platform-gw:description>BB-8 system API</api-platform-gw:description>
+    </api-platform-gw:api>
+    <flow name="api-main">
+        <http:listener config-ref="api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
+        <apikit:router config-ref="api-config" doc:name="APIkit Router" />
+        <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="api-console">
+   		<http:listener config-ref="api-httpListenerConfig" path="/console/*" doc:name="HTTP"/>
+    	<apikit:console config-ref="api-config" doc:name="APIkit Console"/>
+	</flow>
+    <flow name="post:/colour:api-config" tracking:enable-default-events="true">
+        <bb8:colour config-ref="BB-8" colour="#[message.inboundProperties.'http.query.params'.colour]" doc:name="BB-8 colour" />
+        <logger message="Changed colour to #[message.inboundProperties.'http.query.params'.colour]" level="INFO" doc:name="Log colour change" />
+    </flow>
+    <flow name="post:/colour/rainbow:api-config" tracking:enable-default-events="true">
+        <set-payload value="#[[&quot;red&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;indigo&quot;, &quot;violet&quot;, &quot;red&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;indigo&quot;, &quot;violet&quot;, &quot;red&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;indigo&quot;, &quot;violet&quot;, &quot;red&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;indigo&quot;, &quot;violet&quot;, &quot;red&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;indigo&quot;, &quot;violet&quot;, &quot;red&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;indigo&quot;, &quot;violet&quot;, &quot;red&quot;, &quot;orange&quot;, &quot;yellow&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;indigo&quot;, &quot;violet&quot;]]" doc:name="Set Payload" />
+        <foreach collection="#[payload]" doc:name="For Each">
+            <logger message="Changed colour to #[payload]" level="INFO" doc:name="Log colour change" />
+            <bb8:colour config-ref="BB-8" colour="#[payload]" doc:name="BB-8 colour" />
+        </foreach>
+    </flow>
+    <flow name="post:/colour/disco:api-config" tracking:enable-default-events="true">
+        <bb8:disco config-ref="BB-8" doc:name="BB-8 disco disco!"/>
+        <logger message="BB-8 is partying at the disco!" level="INFO" doc:name="Logging the disco"/>
+    </flow>
+    <flow name="post:/colour/off:api-config" tracking:enable-default-events="true">
+        <bb8:stop-action config-ref="BB-8" doc:name="BB-8 stop"/>
+        <bb8:colour config-ref="BB-8" colour="black" doc:name="BB-8 colour off"/>
+        <logger message="BB-8's light turned off" level="INFO" doc:name="Log light off"/>
+    </flow>
+    <flow name="post:/roll:api-config" tracking:enable-default-events="true">
+        <bb8:roll config-ref="BB-8" direction="#[message.inboundProperties.'http.query.params'.direction]" speed="#[message.inboundProperties.'http.query.params'.speed]" doc:name="BB-8 roll" />
+        <logger message="Rolling in direction #[message.inboundProperties.'http.query.params'.direction] with speed #[message.inboundProperties.'http.query.params'.speed]" level="INFO" doc:name="Log roll command" />
+    </flow>
+    <flow name="post:/roll/stop:api-config" tracking:enable-default-events="true">
+        <bb8:roll config-ref="BB-8" direction="0" speed="0" doc:name="BB-8 stop rolling" />
+        <logger message="Stopped rolling" level="INFO" doc:name="Log stop command" />
+    </flow>
+    <!-- 
+    <flow name="post:/drive:api-config">
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload" />
+    </flow>
+    -->
+    <!-- 
+    <flow name="post:/stop:api-config">
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload" />
+    </flow>
+    -->
+    
+    <flow name="post:/dance:api-config" tracking:enable-default-events="true">
+        <bb8:dance config-ref="BB-8" doc:name="BB-8 dance" />
+        <logger message="BB-8 has gone to partaaayyy" level="INFO" doc:name="Log dance command" />
+    </flow>
+    <flow name="post:/path:api-config" tracking:enable-default-events="true">
+        <logger message="Following the path" level="INFO" doc:name="Log path command" />
+        <bb8:roll config-ref="BB-8" direction="0" speed="#[message.inboundProperties.'http.query.params'.speed]" doc:name="BB-8 roll: direction 0" />
+        <expression-component doc:name="Expression"><![CDATA[Thread.sleep(1000);]]></expression-component>
+        <bb8:roll config-ref="BB-8" direction="90" speed="#[message.inboundProperties.'http.query.params'.speed]" doc:name="BB-8 roll: direction 90" />
+        <expression-component doc:name="Expression"><![CDATA[Thread.sleep(1000);]]></expression-component>
+        <bb8:roll config-ref="BB-8" direction="180" speed="#[message.inboundProperties.'http.query.params'.speed]" doc:name="BB-8 roll: direction 180" />
+        <expression-component doc:name="Expression"><![CDATA[Thread.sleep(1000);]]></expression-component>
+        <bb8:roll config-ref="BB-8" direction="270" speed="#[message.inboundProperties.'http.query.params'.speed]" doc:name="BB-8 roll: direction 270" />
+        <expression-component doc:name="Expression"><![CDATA[Thread.sleep(1000);]]></expression-component>
+        <bb8:roll config-ref="BB-8" direction="0" speed="0" doc:name="BB-8 stop" />
+    </flow>
+    <apikit:mapping-exception-strategy name="api-apiKitGlobalExceptionMapping">
+        <apikit:mapping statusCode="404">
+            <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="405">
+            <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="415">
+            <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="406">
+            <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="400">
+            <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+    </apikit:mapping-exception-strategy>
+</mule>

@@ -1,0 +1,83 @@
+#%RAML 0.8
+title: BB-8 System API
+version: 1.0
+baseUri: http://bb-8-system-api.eu.cloudhub.io/api
+
+traits:
+  - client-id-required:
+      queryParameters:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+          
+/roll:
+  displayName: Roll
+  description: Roll BB-8 in a speed and direction
+  is: [client-id-required]
+  post:
+    description: Roll BB-8 in a speed and direction
+    queryParameters:
+      direction:
+        description: Which direction the BB-8 should roll in, from 0 to 360 degrees
+        type: integer
+        example: 180
+        required: true
+      speed:
+        description: How fast the BB-8 should roll
+        type: integer
+        example: 100
+        required: true
+  /stop:
+    displayName: Stop rolling
+    description: Stop BB-8 from rolling
+    is: [client-id-required]
+    post:
+      description: Stop rolling
+/colour:
+  displayName: Colour
+  description: Change the colour of BB-8
+  is: [client-id-required]
+  post:
+    description: Change the colour of BB-8
+    queryParameters:
+      colour:
+        description: Colour to change to
+        example: yellow
+        required: true
+  /rainbow:
+    displayName: Rainbow
+    description: Light up like a rainbow
+    is: [client-id-required]
+    post:
+      description: Light up like a rainbow
+  /disco:
+    displayName: Disco
+    description: Light up the disco
+    is: [client-id-required]
+    post:
+      description: Light up the disco
+  /off:
+    displayName: Off
+    description: Turn off the light
+    is: [client-id-required]
+    post:
+      description: Turn off the light
+/dance:
+  displayName: Dance
+  description: Let's party!!
+  is: [client-id-required]
+  post:
+    description: Let's party!!
+/path:
+  displayName: Follow path
+  description: Tell BB-8 to follow a path
+  is: [client-id-required]
+  post:
+    description: Tell BB-8 to follow a path
+    queryParameters:
+      speed:
+        description: How large the path should be
+        type: integer
+        example: 100
+        required: true

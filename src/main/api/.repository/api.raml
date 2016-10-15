@@ -1,0 +1,54 @@
+#%RAML 0.8
+title: BB-8 System API
+version: 1.0
+baseUri: http://localhost:8081/api
+
+traits:
+  - client-id-required:
+      queryParameters:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+          
+/roll:
+  displayName: Roll
+  description: Roll BB-8 in a speed and direction
+  post:
+    description: Roll BB-8 in a speed and direction
+    queryParameters:
+      direction:
+        description: Which direction the BB-8 should roll in, from 0 to 360 degrees
+        type: integer
+        example: 180
+        required: true
+      speed:
+        description: How fast the BB-8 should roll
+        type: integer
+        example: 500
+        required: true
+/colour:
+  displayName: Colour
+  description: Change the colour of BB-8
+  post:
+    description: Change the colour of BB-8
+    queryParameters:
+      colour:
+        description: Colour to change to
+        example: yellow
+        required: true
+/disco:
+  displayName: Disco
+  description: Let's Party!!
+  post:
+    description: Let's Party!!
+/drive:
+  displayName: Drive
+  description: Control BB-8 using your arrow keys
+  post:
+    description: Control BB-8 using your arrow keys
+/stop:
+  displayName: Stop
+  description: Stop BB-8 from whatever he's currently doing
+  post:
+    description: Stop BB-8 from whatever he's currently doing
