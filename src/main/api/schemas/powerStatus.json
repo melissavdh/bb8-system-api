@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Power State": {
+      "type": "string"
+    },
+    "Battery Volatage": {
+      "type": "integer"
+    },
+    "Charge Count": {
+      "type": "integer"
+    },
+    "Time Since Charge": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "Power State",
+    "Battery Volatage",
+    "Charge Count",
+    "Time Since Charge"
+  ]
+}

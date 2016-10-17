@@ -1,0 +1,7 @@
+headers:
+  version:
+    description: place the version of this resource
+    example: v1.0
+    default: latest
+    required: true
+    type: string

@@ -4,13 +4,27 @@ version: 1.0
 baseUri: http://bb-8-system-api.eu.cloudhub.io/api
 
 traits:
-  - client-id-required:
-      queryParameters:
-        client_id:
-          type: string
-        client_secret:
-          type: string
-          
+  - client-id-required: !include traits/client-id.yaml
+
+/power:
+  displayName: Power Status
+  description: Get BB-8 battery levels
+  is: [client-id-required]
+  get:
+    description: Get BB-8 battery levels
+    responses:
+      200:
+        body:
+          application/json:
+            schema: !include schemas/powerStatus.json
+            example: |
+              {
+                "Power State": "Battery Charging",
+                "Battery Volatage": 769,
+                "Charge Count": 148,
+                "Time Since Charge": "0  minutes"
+              }
+
 /roll:
   displayName: Roll
   description: Roll BB-8 in a speed and direction
@@ -34,6 +48,7 @@ traits:
     is: [client-id-required]
     post:
       description: Stop rolling
+
 /colour:
   displayName: Colour
   description: Change the colour of BB-8
@@ -63,12 +78,14 @@ traits:
     is: [client-id-required]
     post:
       description: Turn off the light
+
 /dance:
   displayName: Dance
   description: Let's party!!
   is: [client-id-required]
   post:
     description: Let's party!!
+
 /path:
   displayName: Follow path
   description: Tell BB-8 to follow a path
@@ -81,3 +98,5 @@ traits:
         type: integer
         example: 100
         required: true
+            
+                  

@@ -1,19 +1,34 @@
 #%RAML 0.8
 title: BB-8 System API
 version: 1.0
-baseUri: http://localhost:8081/api
+baseUri: http://bb-8-system-api.eu.cloudhub.io/api
 
 traits:
-  - client-id-required:
-      queryParameters:
-        client_id:
-          type: string
-        client_secret:
-          type: string
-          
+  - client-id-required: !include traits/client-id.yaml
+
+/power:
+  displayName: Power Status
+  description: Get BB-8 battery levels
+  is: [client-id-required]
+  get:
+    description: Get BB-8 battery levels
+    responses:
+      200:
+        body:
+          application/json:
+            schema: !include schemas/powerStatus.json
+            example: |
+              {
+                "Power State": "Battery Charging",
+                "Battery Volatage": 769,
+                "Charge Count": 148,
+                "Time Since Charge": "0  minutes"
+              }
+
 /roll:
   displayName: Roll
   description: Roll BB-8 in a speed and direction
+  is: [client-id-required]
   post:
     description: Roll BB-8 in a speed and direction
     queryParameters:
@@ -25,11 +40,19 @@ traits:
       speed:
         description: How fast the BB-8 should roll
         type: integer
-        example: 500
+        example: 100
         required: true
+  /stop:
+    displayName: Stop rolling
+    description: Stop BB-8 from rolling
+    is: [client-id-required]
+    post:
+      description: Stop rolling
+
 /colour:
   displayName: Colour
   description: Change the colour of BB-8
+  is: [client-id-required]
   post:
     description: Change the colour of BB-8
     queryParameters:
@@ -37,18 +60,43 @@ traits:
         description: Colour to change to
         example: yellow
         required: true
-/disco:
-  displayName: Disco
-  description: Let's Party!!
+  /rainbow:
+    displayName: Rainbow
+    description: Light up like a rainbow
+    is: [client-id-required]
+    post:
+      description: Light up like a rainbow
+  /disco:
+    displayName: Disco
+    description: Light up the disco
+    is: [client-id-required]
+    post:
+      description: Light up the disco
+  /off:
+    displayName: Off
+    description: Turn off the light
+    is: [client-id-required]
+    post:
+      description: Turn off the light
+
+/dance:
+  displayName: Dance
+  description: Let's party!!
+  is: [client-id-required]
   post:
-    description: Let's Party!!
-/drive:
-  displayName: Drive
-  description: Control BB-8 using your arrow keys
+    description: Let's party!!
+
+/path:
+  displayName: Follow path
+  description: Tell BB-8 to follow a path
+  is: [client-id-required]
   post:
-    description: Control BB-8 using your arrow keys
-/stop:
-  displayName: Stop
-  description: Stop BB-8 from whatever he's currently doing
-  post:
-    description: Stop BB-8 from whatever he's currently doing
+    description: Tell BB-8 to follow a path
+    queryParameters:
+      speed:
+        description: How large the path should be
+        type: integer
+        example: 100
+        required: true
+            
+                  
